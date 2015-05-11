@@ -1,0 +1,866 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+
+<title>Stop Writing Puppet Modules</title>
+
+<meta name="description" content="A Guide to Best Practices In The Puppet Community">
+<meta name="author" content="Lucas Yamanishi">
+<meta name="generator" content="reveal-ck 1.1.0">
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+<link rel="stylesheet" href="css/reveal.css">
+<link rel="stylesheet" href="css/theme/custom.css" id="theme">
+
+<!-- Code syntax highlighting -->
+<link rel="stylesheet" href="lib/css/zenburn.css">
+
+<link rel="stylesheet" href="css/reveal-ck.css">
+
+<link rel="stylesheet" href="css/theme/custom.css">
+
+<!-- Printing and PDF exports -->
+<script>
+  var link = document.createElement( 'link' );
+  link.rel = 'stylesheet';
+  link.type = 'text/css';
+  link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+  document.getElementsByTagName( 'head' )[0].appendChild( link );
+</script>
+
+<!--[if lt IE 9]>
+<script src="lib/js/html5shiv.js"></script>
+<![endif]-->
+
+  </head>
+
+  <body>
+    <div class="reveal">
+  <!-- Any section element inside of this container is displayed as a slide -->
+  <div class="slides">
+    <style>
+	@font-face {
+		font-family: 'Arvo';
+		font-style: normal;
+		font-weight: 400;
+		src: local('Arvo'), url('fonts/Arvo.ttf') format('truetype');
+	}
+</style>
+
+<div id="header-footer">
+	<div id="footer" class="footer">
+		<p>&#169; Lucas Yamanishi 2015</p>
+	</div>
+</div>
+
+<!-- Title -->
+<section id="Title">
+	<section id="Title-1">
+		<h1>Stop Writing Puppet Modules</h1>
+		<h3>Best Practices In The Puppet Community</h3>
+		<p style="font-size:smaller">Assembled by Lucas Yamanishi / lucas.yamanishi@nasa.gov</p>
+
+		<footer style="position:absolute;width:100%;top:100%"><p style="font-size:x-small">
+			<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
+				<img alt="Creative Commons License" style="border-width:0" src="images/cc_sa-4.0.png">
+			</a>
+			<br>
+			This work is licensed under a
+			<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
+				Creative Commons Attribution-ShareAlike 4.0 International License
+			</a>.
+		</p></footer>
+		<aside class="notes">
+			<h2>Demographics?</h2>
+			<ul>
+				<li>Government services? (contractors)</li>
+				<li>Government employees?</li>
+				<li>Pure private-sector?</li>
+				<br>
+				<li>Sysadmins?</li>
+				<li>Developers?</li>
+				<li>Management?</li>
+				<br>
+				<li>Using open source?</li>
+				<li>Contributing back?</li>
+			</ul>
+		</aside>
+	</section>
+
+	<section id="QR-code">
+		<img src="images/qr_code.svg" style="width:50%">
+		<p><a href="http://lucas.yamanishi.us/stop_writing_puppet_modules">http://lucas.yamanishi.us/stop_writing_puppet_modules</a></p>
+	</section>
+</section>
+
+<section id="Author">
+	<section id="Author-1">
+		<h3>Bona Fides</h3>
+		<hr>
+		<p>
+			<strong>Systems Administrator - ADNET Systems, Inc.</strong><br>
+			NASA SESDA PMO<br>
+			<span style="font-size:smaller">
+				(Space and Earth Science Analysis Project Management Office)
+			</span>
+		</p>
+		<aside class="notes">
+			<ul>
+				<li><strong>BE QUICK!</strong></li>
+				<li>Sample Analysis at Mars (SAM) - found methane</li>
+			</ul>
+		</aside>
+	</section>
+
+	<section id="Author-2">
+		<p>
+			</p>
+<h3>Background in the US Army</h3>
+			<ul style="font-size:smaller">
+				<li>Infantry</li>
+				<li>Counterintelligence (Reserves)</li>
+			</ul>
+		
+		<img alt="Lucas Yamanishi, 3rd Squad, 2nd Platoon, C Company, 1st Battalion, 17th Infantry Regiment" src="images/3rd_squad_with_zoom.png" style="border:initial;box-shadow:initial;background-color:transparent;top:0">
+		<aside class="notes">
+			<ul>
+				<li><strong>BE QUICK!</strong></li>
+			</ul>
+		</aside>
+	</section>
+
+	<section id="Street-Cred">
+		<p>
+			Minor contributions made to...
+			</p>
+<ul>
+				<li>Gentoo</li>
+				<li>vim-puppet</li>
+				<li>various Puppet modules</li>
+				<li>This presentation software (<a href="https://github.com/jedcn/reveal-ck">reveal-ck</a>)</li>
+			</ul>
+		
+	</section>
+</section>
+
+
+<!-- Disclaimer -->
+<section id="Disclaimer">
+	<h2>Disclaimer</h2>
+	<aside class="notes">
+		<ul>
+			<li>Speaking on behalf of myself, not ADNET</li>
+			<li>Not a lawyer</li>
+			<li>A lot of opinion</li>
+		</ul>
+	</aside>
+</section>
+
+
+<!-- Setup -->
+<section id="Agenda">
+	<h2>Agenda</h2>
+	<ul>
+		<li>Intro</li>
+		<li>Free &amp; Open Source Software</li>
+		<li>Community Workflows</li>
+		<li>Building with Community in mind</li>
+		<li>Finding &amp; building great Puppet modules</li>
+	</ul>
+	<aside class="notes">
+		<ul>
+			<li> Who's interested in what?</li>
+		</ul>
+	</aside>
+</section>
+
+
+<!-- Intro -->
+<section id="Intro" data-transition="zoom">
+	<section id="Intro-1">
+		<h3>Stop Writing Puppet Modules</h3>
+		<p class="fragment">(and start focusing on your business)</p>
+		<aside class="notes">
+			<ul>
+				<li>I mean this</li>
+				<li>Too many modules of poor quality</li>
+				<li>Tim Sharpe's blog post</li>
+				<li>Common software, common problems, common solutions</li>
+				<br>
+				<li>Focus on your business!</li>
+			</ul>
+		</aside>
+	</section>
+
+	<section id="Intro-2">
+		<h3>Puppet is more than a...</h3>
+		<ul>
+			<li class="fragment">configuration tool</li>
+			<li class="fragment">framework</li>
+			<li class="fragment">language</li>
+		</ul>
+	</section>
+
+	<section id="Intro-3" data-background-transition="zoom" data-background-color="#f4cf56">
+		<h3><font color="#302b6d" style="font-family:Arvo"> Puppet is a community</font></h3>
+		<aside class="notes">
+			<ul>
+				<li>Help each other out</li>
+				<li>Larger open source community</li>
+				<li>Good community practices are good business practices</li>
+			</ul>
+		</aside>
+	</section>
+</section>
+
+
+<!-- Open Source -->
+<section id="Open-Source">
+	<section id="Open-Source-Title">
+		<h2>Free &amp; Open Source Software</h2>
+		<aside class="notes">
+			<ul>
+				<li>Quick!</li>
+				<li>What does the audience think?</li>
+				<li>philosophy</li>
+				<li>buzz word</li>
+				<li>development model</li>
+				<li><strong>Free as in freedom, Free as in beer</strong></li>
+			</ul>
+		</aside>
+	</section>
+
+	<section id="Open-Source-1">
+		<h3>
+			Free as in freedom,<br>
+			Free as in beer<br>
+		</h3>
+		<hr class="fragment" data-fragment-index="1">
+		<h3 class="fragment" data-fragment-index="1">
+			Open as a book,<br>
+			Open as in "to everybody"
+		</h3>
+		<aside class="notes">
+			<ul>
+				<li>Everybody knows Free</li>
+				<li>But think about Open, too</li>
+			</ul>
+		</aside>
+	</section>
+
+	<section id="Open-Source-2">
+		<h3>
+			<span class="fragment">Puppet<br></span>
+			Open Source Community
+		</h3>
+	</section>
+
+	<section id="Open-Source-3">
+		<h3>Community Benefits</h3>
+		<ul style="font-size:smaller">
+			<li>Large ecosystem</li>
+			<li>Linus's Law (many eyes)</li>
+			<li>Reduced maintenance costs*</li>
+			<li>Easier to troubleshoot*</li>
+			<li>Better overall quality*</li>
+		</ul>
+		<aside class="notes">
+			<ul>
+				<li>Focus on <strong>Puppet</strong>
+</li>
+				<li>Don't read slide!</li>
+				<br>
+				<li>You don't have to write everything yourself</li>
+				<li>Not just modules</li>
+				<li>Tooling</li>
+				<ul>
+					<li>rspec-puppet</li>
+					<li>r10k</li>
+					<li>Git</li>
+				</ul>
+				<br>
+				<li>Linus's Law</li>
+				<li>"given enough eyeballs, all bugs are shallow" - Eric S. Raymond</li>
+				<ul>
+					<li>Heartbleed - OpenSSL</li>
+					<li>Shellshock - Bash</li>
+				</ul>
+				<br>
+				<li>Reduced maintenance costs</li>
+				<li>
+					If you're not contributing,<br>
+					not seeing the full benefits.
+				</li> 
+			</ul>
+		</aside>
+	</section>
+
+	<section id="Open-Source-Cycle">
+		<img src="images/open_source_cycle_good.png" style="background-color:#A2BFF0">
+		<aside class="notes">
+			<ul>
+				<li>Greg Kroah-Hartman - Linaro talks</li>
+				<li>Five stages - Dirk Riehle, German professor</li>
+				<ul>
+					<li>Connecting - Seeker</li>
+					<li>Understanding - Visitor</li>
+					<li>Engaging - User</li>
+					<li>Performing - Contributor</li>
+					<li>Leading - Leader</li>
+				</ul>
+			</ul>
+		</aside>
+	</section>
+
+	<section id="Open-Source-4">
+		<h3>Hidden Costs</h3>
+		<ul style="font-size:smaller">
+			<li>Limited support*</li>
+			<li>Publication requirements</li>
+			<li>Legal overhead</li>
+			<li>No guarantees</li>
+		</ul>
+	</section>
+
+	<section id="Software-Policy-1" data-transition="fade">
+		<p></p>
+<h3>Open Source Software Policy</h3>
+		<p>(use and contribution)</p>
+	</section>
+
+	<section id="Software-Policy-1" data-transition="fade">
+		<h3>Software Policy</h3>
+		<p>(use and contribution)</p>
+	</section>
+
+	<section id="Software-Policy-1" data-transition="fade">
+		<h3>Software Policy</h3>
+		<p>(use and contribution)</p>
+		<ul style="font-size:smaller">
+			<li>What content is OK?  What's off limits?</li>
+			<li>Who signs off?</li>
+			<li>Acceptable license features</li>
+			<ul>
+				<li>Use permission</li>
+				<li>Redistribution rights</li>
+				<li>Attribution requirements</li>
+				<li>Patent protection</li>
+				<li>Disclaimer of liability</li>
+			</ul>
+			<li>Acceptable licenses (MIT, BSD, Apache, GPL, etc.)</li>
+			<li>Display of license (<code>LICENSE</code> file, file headers, etc.)</li>
+			<li>Contributor License Agreements (CLAs)</li>
+			<li>Quality control</li>
+		</ul>
+		<aside class="notes">
+		</aside>
+	</section>
+</section>
+
+
+<!-- Workflows -->
+<section id="Workflows">
+	<section id="Workflows-Title">
+		<h2>Workflows</h2>
+		<aside class="notes">
+			<ul>
+				<li>I want to talk about work flows because...</li>
+				<li>
+			</ul>
+		</aside>
+	</section>
+
+	<section id="Workflows-The-Forge-and-GitHub">
+		<span>
+			<h3>The Puppet Forge</h3>
+		</span>
+		<span class="fragment">
+			<h3>GitHub &amp; Google</h3>
+		</span>
+	</section>
+
+	<section id="Workflows-puppet-module-install">
+		<code>puppet module install</code>
+		<aside class="notes">
+			<ul>
+				<li>Canonical way of doing things</li>
+				<li>Don't use it</li>
+				<li>Restricts flow</li>
+				<li>Extra steps to modify/contribute</li>
+				<li>Use Git instead</li>
+			</ul>
+		</aside>
+	</section>
+
+	<section id="Workflows-git-clone">
+		<code>git clone</code>
+		<aside class="notes">
+			<ul>
+				<li>Local branch</li>
+				<li>Local tooling</li>
+				<li>Local workflows</li>
+				<li>Easier to contribute</li>
+			</ul>
+		</aside>
+	</section>
+
+	<section>
+		<h3>Feature branches</h3>
+		<img src="images/feature_branch.svg" style="background-color:#A2BFF0">
+		<p style="font-size:x-small">
+			<a rel="license" href="http://creativecommons.org/licenses/by/2.5/au/">
+				<img alt="Creative Commons Licence" style="border-width:0" src="https://i.creativecommons.org/l/by/2.5/au/88x31.png">
+			</a><br>
+			Image courtesy of <a href="https://www.atlassian.com/git/tutorials/comparing-workflows/feature-branch-workflow">Atlassian</a> - <a rel="license" href="http://creativecommons.org/licenses/by/2.5/au/">Creative Commons Attribution 2.5 Australia License</a>.
+		</p>
+	<aside class="notes">
+		<ul>
+			<li>r10k deserves special mention</li>
+		</ul>
+	</aside>
+	</section>
+
+	<section>
+		<h3><code>r10k</code></h3>
+		<p style="font-size:smaller"><a href="http://github.com/puppetlabs/r10k">http://github.com/puppetlabs/r10k</a></p>
+	</section>
+	<aside class="notes">
+		<ul>
+			<li>Control repository</li>
+			<li>Encourages good practices</li>
+		</ul>
+	</aside>
+</section>
+
+
+<!-- Building -->
+<section id="Building">
+	<section id="Building-1">
+		<h2>
+			Building<br>
+			with Community in mind
+		</h2>
+	</section>
+
+	<section id="Building-environment-conf">
+		<code>environment.conf</code>
+		<pre><code class="ini">
+modulepath = site:modules:$basemodulepath
+		</code></pre>
+		<p style="font-size:small">Puppet &gt;= 3.6 required</p>
+		<pre><code class="ini">
+basemodulepath = $confdir/$environment/site:$confdir/$environment/modules
+		</code></pre>
+		<p style="font-szie:small">Older versions</p>
+	</section>
+
+	<section id="Building-site-pp">
+		<code>manifests/site.pp</code>
+		<pre><code class="puppet">
+$os_name  = $::os['name']
+$os_major = $::os['release']['major']
+$os_minor = $::os['release']['minor']
+
+node default {
+  $host_group      = 'default'
+  $security_policy = 'high'
+
+  include 'base'
+
+  warning("Node ${::certname} does not match any host groups")
+}
+
+node /^ntp[[:digit:]]{2}\.dca\.example\.net$/ {
+  $host_group      = 'ntp'
+  $location        = 'DCA'
+  $security_policy = 'medium'
+
+  include 'base'
+}
+		</code></pre>
+		<p style="font-size:small">Facter &gt;= 2.2 required for <code>$::os</code> structured facts</p>
+	</section>
+
+	<section id="Building-base-module">
+		<code>site/base/manifests/init.pp</code>
+		<pre><code class="puppet">
+# A base class to manage Puppet runs 
+class base {
+  
+  $hiera_classes = hiera_array('classes', [])
+  include $hiera_classes
+}
+		</code></pre>
+		<p style="font-size:small">Puppet &gt;= 3.0 required</p>
+	</section>
+
+	<section id="Building-hiera-yaml">
+		<code>hiera.yaml</code>
+		<pre><code class="yaml">
+---
+:backends:
+	- 'eyaml'
+	- 'yaml'
+:merge_behavior: 'deeper'
+:hierarchy:
+	- "nodes/%{::clientcert}"
+	- "host_groups/%{::host_group}"
+	- "os/%{::kernel}/%{::osfamily}/%{::os_name}/%{::os_major}/%{::os_minor}"
+	- "os/%{::kernel}/%{::osfamily}/%{::os_name}/%{::os_major}"
+	- "os/%{::kernel}/%{::osfamily}/%{::os_name}"
+	- "os/%{::kernel}/%{::osfamily}"
+	- "os/%{::kernel}"
+	- "locations/%{::location}"
+	- "security_policies/%{::security_policy}"
+	- 'common'
+:yaml:
+	:datadir: "/etc/puppet/environments/%{::environment}/datadir"
+:eyaml:
+	:datadir: "/etc/puppet/environments/%{::environment}/datadir"
+	:gpg_gnupghome: '/etc/puppet/gpg'
+	:extension: 'yaml'
+		</code></pre>
+		<p style="font-size:small">Puppet &gt;= 3.0 required</p>
+	</section>
+
+	<section id="Building-host-group-example">
+		<code>host_groups/ntp_stratum2.yaml</code>
+		<pre><code class="yaml">
+---
+classes:
+    - 'ntp'
+
+ntp::preferred_servers:
+    - %{hiera('ntp_local_master', '')}
+ntp::servers:
+    - 0.us.pool.ntp.org
+    - 1.us.pool.ntp.org
+    - 2.us.pool.ntp.org
+    - 3.us.pool.ntp.org
+		</code></pre>
+		<p style="font-size:small">Hiera &gt;= 1.3 required for <code>hiera()</code> function in data</p>
+	</section>
+
+	<section id="Building-Puppetfile">
+		<code>Puppetfile</code>
+		<p>(for use with <a href="https://github.com/puppetlabs/r10k">r10k</a>)</p>
+		<pre><code class="ruby">
+####################
+# Site-local modules
+#
+mod 'root_account',
+  git: 'git@git-server.example.net:puppet/site-local/root_account.git'
+
+mod 'really_awesome_product',
+  svn: 'https://svn-server.example.net/puppet/site-local/really_awesome_product/trunk',
+  rev: '539'
+
+####################
+# Third-party modules
+#
+mod 'docker',
+  git: 'git@git-server.example.net:puppet/third-party/garethr-docker.git',
+  tag: 'v4.0.2'
+
+# TODO:
+#   - find an NTP module
+		</code></pre>
+		<p style="font-size:small">r10k / librarian-puppet file</p>
+	</section>
+</section>
+
+
+<!-- Modules -->
+<section id="Modules">
+	<section id="Modules-Title">
+		<h2>Finding &amp; Writing Great Modules</h2>
+		<aside class="notes">
+			<ul>
+				<li>Explain section</li>
+				<li>"Goes both ways"; selecting modules, contributing</li>
+				<br>
+				<li>Project size, activity</li>
+				<br>
+				<li>Ryan Coleman's presentations</li>
+			</ul>
+		</aside>
+	</section>
+
+	<section id="Modules-Modularity">
+		<h3>Modularity</h3>
+		<aside class="notes">
+			<ul>
+				<li>...in the name</li>
+				<li>UNIX philosophy</li>
+				<li>light footprint</li>
+			</ul>
+		</aside>
+	</section>
+
+	<section id="Modules-Modularity-Types-Providers">
+		<h3>Types &amp; Providers</h3>
+		<pre><code>
+./
+ |
+ +-- manifests/
+ |
+ +-- lib/
+        |
+        +-- puppet/
+                  |
+                  +-- provider/
+                  |
+                  +-- type/
+		</code></pre>
+		<aside class="notes">
+			<ul>
+				<li>
+<strong>RAL</strong> (resource abstraction layer)</li>
+				<li>This is what makes Puppet so great</li>
+				<li>
+<code>defines</code> are great for meta-types, prototyping</li>
+			</ul>
+		</aside>
+	</section>
+
+	<section id="Modules-Compatibility-1">
+		<h3>Compatibility</h3>
+		<aside class="notes">
+			<ul>
+				<li><strong>BE QUICK!</strong></li>
+				<li>OS</li>
+				<li>OS version</li>
+				<li>Puppet version</li>
+				<li>Module</li>
+			</ul>
+		</aside>
+	</section>
+
+	<section id="Modules-Compatibility-2">
+		<h3>Operating System Portability</h3>
+		<ul>
+			<li>Structure</li>
+			<li><code>params.pp</code></li>
+			<li><a href="https://github.com/ripienaar/puppet-module-data">Data in modules</a></li>
+			<ul>
+				<li style="font-size:smaller">Puppet Labs ticket:<a href="https://tickets.puppetlabs.com/browse/PUP-42">PUP-42</a>
+</li>
+			</ul>
+		</ul>
+	</section>
+
+	<section id="Modules-Compatibility-3">
+		<h3>Cross-module compatibility</h3>
+		<ul style="font-size:smaller">
+			<li>conf.d</li>
+			<li><a href="https://github.com/puppetlabs/puppetlabs-concat">concat</a></li>
+			<li>Augeas resources</li>
+			<li><a href="http://augeasproviders.com">Augeas Providers</a></li>
+		</ul>
+		<aside class="notes">
+			<ul>
+				<li>namespacing</li>
+				<li>std parameter naming</li>
+				<li>light footprint</li>
+				<li>positive control vs implicit control</li>
+			</ul>
+		</aside>
+	</section>
+
+	<section id="Modules-Compatibility-4-SemVar">
+		<h3>Semantic Versioning</h3>
+		<p><img src="images/badge-puppetforge_v0.9.0.svg"></p>
+		<ul>
+			<li>Major</li>
+			<li>Minor</li>
+			<li>Bugfix</li>
+		</ul>
+		<p><a href="http://semver.org">http://SemVar.org</a></p>
+	</section>
+
+	<section id="Modules-Style-Readability">
+		<h3>Readability</h3>
+		<aside class="notes">
+			<ul>
+				<li>proportion</li>
+			</ul>
+		</aside>
+	</section>
+
+	<section id="Modules-Style-Guide">
+		<h3>Style Guide</h3>
+		<p>
+			</p>
+<blockquote cite="https://code.google.com/p/google-styleguide/" style="width:100%;font-size:smaller">
+				<p>Every major [software] project has its own style guide: a set of conventions (sometimes arbitrary) about how to write code for that project. It is much easier to understand a large codebase when all the code in it is in a consistent style.</p>
+				<footer style="width:33%"><li><a href="https://code.google.com/p/google-styleguide/">google-styleguide</a></li></footer>
+			</blockquote>
+		
+		<hr>
+		<p>
+			<a href="https://docs.puppetlabs.com/guides/style_guide.html">https://docs.puppetlabs.com/guides/style_guide.html</a>
+		</p>
+		<aside class="notes">
+			<ul>
+				<li>Style-per-language</li>
+				<li>Contains best practices</li>
+			</ul>
+		</aside>
+	</section>
+
+	<section id="Modules-Style-puppet-lint">
+		<h3><code>puppet-lint</code></h3>
+		<p style="font-size:smaller"><a href="http://puppet-lint.com">http://puppet-lint.com</a></p>
+	</section>
+
+	<section id="Modules-Documentation">
+		<h3>Documentation</h3>
+	</section>
+
+	<section id="Modules-Tests">
+		<h3>Tests</h3>
+		<ul>
+			<li>Smoke</li>
+			<li>Unit</li>
+			<li>Integration</li>
+			<li>Acceptance</li>
+		</ul>
+	</section>
+
+	<section id="Modules-Tests-rspec-puppet">
+		<h4><code>rspec-puppet</code></h4>
+		<p style="font-size:smaller"><a href="http://rspec-puppet.com">http://rspec-puppet.com</a></p>
+		<p><img src="images/badge-travis_passing.png"><img src="images/badge-coverage_98.svg"></p>
+		<pre><code class="ruby">
+require 'spec_helper'
+
+describe 'example_module' do
+  context 'on CentOS' do
+    let(:facts) {{ operatingsystem: 'CentOS' }}
+
+    context "example_module class with default parameters" do
+      let(:params) {{ }}
+
+      it { is_expected.to compile.with_all_deps }
+
+      it { is_expected.to contain_class('example_module::params') }
+
+      it { is_expected.to contain_service('example_module') }
+      it { is_expected.to contain_file('/path/to/example_file').with_ensure('file') }
+    end
+  end
+end
+		</code></pre>
+	</section>
+
+	<section id="Modules-Tests-Vagrant">
+		<h3>Vagrant</h3>
+		<p style="font-size:smaller"><a href="http://VagrantUp.com">http://VagrantUp.com</a></p>
+		<aside class="notes">
+			<ul>
+				<li>Virtual test environments</li>
+			</ul>
+		</aside>
+	</section>
+
+	<section id="Modules-Tests-Beaker">
+		<h3>Beaker</h3>
+		<p style="font-size:smaller"><a href="https://github.com/puppetlabs/beaker">https://github.com/puppetlabs/beaker</a></p>
+		<aside class="notes">
+			<ul>
+				<li>Two components: Beaker &amp; beaker-rspec</li>
+				<li>Beaker DSL has a few basic expectations</li>
+				<li>"rspec for servers"</li>
+			</ul>
+		</aside>
+	</section>
+
+	<section id="Modules-Skeletons">
+		<h3>Skeletons &amp; Other Standards</h3>
+		<ul>
+			<li><a href="https://github.com/garethr/puppet-module-skeleton">https://github.com/garethr/puppet-module-skeleton</a></li>
+			<li><a href="https://github.com/stdmod/stdmod">StdMod</a></li>
+		</ul>
+		<aside class="notes">
+			<ul>
+				<li>
+<code>puppet module generate</code> is a powerful tool</li>
+				<li>The out-of-the-box skeleton isn't that great</li>
+			</ul>
+		</aside>
+	</section>
+</section>
+
+
+<!-- The End -->
+<section id="Fin" data-transition="fade">
+	<h2>Questions?</h2>
+</section>
+
+
+<!-- Resources & Links -->
+<section id="Resources" data-transition="fade">
+	<h2>Resources</h2>
+	<ul style="font-size:smaller">
+		<li><a href="https://docs.puppetlabs.com/guides/module_guides/bgtm.html">Beginner's Guide to Modules</a></li>
+		<li><a href="http://www.puppetbestpractices.com/">PuppetBestPractices.com</a></li>
+		<li><a href="http://radar.oreilly.com/2015/04/the-puppet-design-philosophy.html">The Puppet design philosophy - Brian Anderson</a></li>
+		<li>
+<a href="http://shop.oreilly.com/product/0636920038528.do">Puppet Best Practices - Chris Barbour</a> (book in pre-release)</li>
+		<li>Blogs:</li>
+		<ul>
+			<li><a href="http://bombasticmonkey.com/">Tim Sharpe</a></li>
+			<li><a href="http://somethingsinistral.net/">Adrien Thebo</a></li>
+			<li><a href="http://terrarum.net/">Joe Topjian</a></li>
+			<li><a href="http://garylarizza.com/">Gary Larizza</a></li>
+			<li><a href="http://www.planetpuppet.org/">Planet Puppet</a></li>
+			<li><a href="https://puppetlabs.com/blog">Puppet Labs</a></li>
+		</ul>
+		<li>Mailing list:<a href="https://groups.google.com/forum/#!forum/puppet-users">puppet-users</a>
+</li>
+		<li>IRC: <a href="irc://dickson.freenode.net/%26puppet"><code>#puppet</code></a> on <a href="https://freenode.net/"><code>freenode</code></a>
+</li>
+	</ul>
+</section>
+
+  </div>
+</div>
+
+<script src="lib/js/head.min.js"></script>
+<script src="js/reveal.js"></script>
+
+<script>
+  (function() {
+  function extend( a, b ) {
+    for(var i in b) {
+      a[i] = b[i];
+    }
+  }
+  var baseOptions = {
+    transition: 'default',
+
+    dependencies: [
+      { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+      { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+      { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+      { src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+      { src: 'plugin/zoom-js/zoom.js', async: true },
+      { src: 'plugin/notes/notes.js', async: true }
+    ]
+  };
+  var configOptions = {"controls":true,"progress":true,"history":true,"center":true}
+  var initializeOptions = {};
+  extend(initializeOptions, baseOptions);
+  extend(initializeOptions, configOptions);
+  Reveal.initialize(initializeOptions);
+})();
+
+</script>
+
+  </body>
+</html>
