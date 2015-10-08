@@ -1,5 +1,5 @@
-@import url(../../lib/font/source-sans-pro/source-sans-pro.css);
 @import url(../../lib/font/inconsolata/inconsolata.css);
+@import url(../../lib/font/pt_sans/pt_sans.css);
 /**
  * Black theme for reveal.js. This is the opposite of the 'white' theme.
  *
@@ -16,7 +16,7 @@ body {
   background-color: #0B3D91; }
 
 .reveal {
-  font-family: 'Source Sans Pro', Helvetica, sans-serif;
+  font-family: 'PT Sans', sans-serif;
   font-size: 38px;
   font-weight: normal;
   color: #fff; }
@@ -36,7 +36,7 @@ body {
 .reveal h1, .reveal h2, .reveal h3, .reveal h4, .reveal h5, .reveal h6 {
   margin: 0 0 20px 0;
   color: #fff;
-  font-family: 'Source Sans Pro', Helvetica, sans-serif;
+  font-family: 'PT Sans', sans-serif;
   font-weight: 600;
   line-height: 1.2;
   letter-spacing: normal;
@@ -300,4 +300,5 @@ body {
 
 .reveal .slides .footer p {
   vertical-align: middle;
+  font-family: 'PT Sans', sans-serif;
   font-size: 16px; }
